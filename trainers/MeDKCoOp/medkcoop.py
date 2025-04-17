@@ -36,7 +36,7 @@ class TextEncoder(nn.Module):
 
 
 
-def edge_construct(x, p=2, dim=1, enable_mask=True):   # v1_graph---taking the similairty by 
+def edge_construct(x, p=2, dim=1, enable_mask=True):
     ''' 
     x: (n,K)   [m+1, 1000, 1024]
     return: (n^2, K)
@@ -221,7 +221,7 @@ class GraphConvolution(nn.Module):
     def graph_normalization(self, A, add_self_loop=True, symmetric=True, clamp_value=None, eps=1e-5):
         if add_self_loop:
             eye = torch.eye(A.size(-1), device='cuda')  # [n, n]
-            A = A + eye.unsqueeze(0).to(self.device)  # 批量添加自环 [b, n, n]
+            A = A + eye.unsqueeze(0).to(self.device)  # [b, n, n]
 
         if clamp_value is not None:
             A = torch.clamp(A, min=clamp_value[0], max=clamp_value[1])
@@ -321,7 +321,7 @@ class MultiModalPromptLearner(nn.Module):
         print("CLIP CTX_DIM=", self.ctx_dim)     # 512
         self.meta_net = nn.Sequential(OrderedDict([
             ("linear1", nn.Linear(256, 256 // 16)),     # W1=[256, 16], b1=16, features*W1+b1 -> [4, 16]
-            ("relu", nn.ReLU(inplace=True)),            # 激活函数
+            ("relu", nn.ReLU(inplace=True)),
             ("linear2", nn.Linear(256 // 16, self.ctx_dim))      # W2=[16, 512], b2=512, features*X2+b2 -> [4, 512]
         ]))
 
@@ -449,7 +449,7 @@ class MultiModalPromptLearner(nn.Module):
             feat_tt = torch.cat([inputs_text, node_cluster_tt], dim=1)      # [2, 3, 512]
             feat_tt = feat_tt.transpose(1, 2)          # [2, 512, 3]
             node_num = feat_tt.size()[-1]
-            edge_tt = edge_construct(feat_tt)    # εtt zt与文本子图Ct的边    [2, 3, 3]
+            edge_tt = edge_construct(feat_tt)    # [2, 3, 3]
         # text_features = text_features + prompts
         imgproto_features = imgproto_features.unsqueeze(0).expand(node_num, -1, -1)      # [1, 2, 512] -> [2, 2, 512]
 
